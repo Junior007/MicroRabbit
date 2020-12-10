@@ -44,7 +44,6 @@ namespace MicroRabbit.Banking.Api
                 c.SwaggerDoc("v1", new OpenApiInfo { Version = "v1", Title = "Banking Application", });
             });
 
-            services.AddMediatR(Assembly.GetExecutingAssembly());
 
             RegisterServices(services);
 

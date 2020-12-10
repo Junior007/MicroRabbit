@@ -8,6 +8,10 @@ using Microsoft.Extensions.DependencyInjection;
 using MicroRabbit.Banking.Data.Context;
 using MediatR;
 using System.Reflection;
+using MicroRabbit.Banking.Domain.Commands;
+using MicroRabbit.Banking.Domain.CommandHandlers;
+using System;
+using System.Linq;
 
 namespace MicroRabbit.Infra.IoC
 {
@@ -17,7 +21,14 @@ namespace MicroRabbit.Infra.IoC
         {
             //Domain bus
             services.AddTransient<IEventBus, RabbitMQBus>();
-            services.AddMediatR(Assembly.GetExecutingAssembly());
+
+            Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            var assembly = assemblies.Where(ass => ass.FullName.Contains("MicroRabbit.Banking.Domain")).FirstOrDefault();
+            services.AddMediatR(assembly);
+
+
+            //Banking command
+            //services.AddTransient <IRequestHandler<CreateTransferCommand>, TransferCommandHandler>();
 
             //Application services
             services.AddTransient<IAccountService, AccountService>();
