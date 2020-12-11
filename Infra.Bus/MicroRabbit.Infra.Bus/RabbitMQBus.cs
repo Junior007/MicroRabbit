@@ -2,13 +2,14 @@
 using MicroRabbit.Domain.Core.Bus;
 using MicroRabbit.Domain.Core.Commands;
 using MicroRabbit.Domain.Core.Events;
+using Newtonsoft.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Text.Json;
+//using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace MicroRabbit.Infra.Bus
@@ -41,7 +42,7 @@ namespace MicroRabbit.Infra.Bus
                     var eventName = @event.GetType().Name;
                     channel.QueueDeclare(eventName, false, false, false, null);
 
-                    var message = JsonSerializer.Serialize(@event);
+                    var message = JsonConvert.SerializeObject(@event);
                     var body = Encoding.UTF8.GetBytes(message);
                     channel.BasicPublish("", eventName, null, body);
                 }
@@ -120,8 +121,8 @@ namespace MicroRabbit.Infra.Bus
                 {
                     var handler = Activator.CreateInstance(subscription);
                     if (handler == null) continue;
-                    var eventType = _eventTypes.SingleOrDefault(et => et.Name == eventName);
-                    var @event = JsonSerializer.Deserialize(message, eventType);
+                    Type eventType = _eventTypes.SingleOrDefault(et => et.Name == eventName);
+                    var @event = JsonConvert.DeserializeObject(message, eventType);
                     var concreteType = typeof(IEventHandler<>).MakeGenericType(eventType);
                     await (Task)concreteType.GetMethod("Handle").Invoke(handler, new object[] { @event });
                 }

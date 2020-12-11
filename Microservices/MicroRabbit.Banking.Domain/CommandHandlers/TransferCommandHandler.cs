@@ -10,19 +10,19 @@ using System.Threading.Tasks;
 
 namespace MicroRabbit.Banking.Domain.CommandHandlers
 {
-    public class TransferCommandHandler : IRequestHandler<CreateTransferCommand, Unit>
+    public class TransferCommandHandler : IRequestHandler<CreateTransferCommand, bool>
     {
         private readonly IEventBus _bus;
         public TransferCommandHandler(IEventBus bus)
         {
             _bus = bus;
         }
-        public Task<Unit> Handle(CreateTransferCommand request, CancellationToken cancellationToken)
+        public Task<bool> Handle(CreateTransferCommand request, CancellationToken cancellationToken)
         {
 
             //publish event to RabbitMQ
             _bus.Publish(new TransferCreatedEvent(request.From, request.To, request.Amount));
-            return Task.FromResult(Unit.Value);
+            return Task.FromResult(true);
         }
 
     }
