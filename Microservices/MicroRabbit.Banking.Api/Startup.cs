@@ -35,7 +35,7 @@ namespace MicroRabbit.Banking.Api
             services.AddDbContext<BankingDbContext>(
                 options =>
                 {
-                    options.UseSqlServer(Configuration.GetConnectionString("BankingDbConnection"));
+                    options.UseSqlServer(Configuration.GetConnectionString("BankingDbConnection"), b => b.MigrationsAssembly("MicroRabbit.Banking.Api"));
                 });
             services.AddControllers();
 
@@ -51,7 +51,10 @@ namespace MicroRabbit.Banking.Api
         }
         //
         private void RegisterServices(IServiceCollection services)
-        {
+        {   /*
+            Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            var assembly = assemblies.Where(ass => ass.FullName.Contains("MicroRabbit.Banking.Domain")).FirstOrDefault();
+            */
             DependencyContainer.RegisterServices(services);
         }
 

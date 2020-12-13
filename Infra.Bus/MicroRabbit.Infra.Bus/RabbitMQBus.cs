@@ -57,15 +57,17 @@ namespace MicroRabbit.Infra.Bus
             var eventName = typeof(T).Name;
             var handlerType = typeof(TH);
 
+            if (!_eventTypes.Contains(typeof(T)))
+            {
+                _eventTypes.Add(typeof(T));
+            }
+
             if (!_handlers.ContainsKey(eventName))
             {
                 _handlers.Add(eventName, new List<Type>());
             }
 
-            if (!_eventTypes.Contains(handlerType))
-            {
-                _eventTypes.Add(handlerType);
-            }
+
 
             if (_handlers[eventName].Any(s => s.GetType() == handlerType))
             {
@@ -91,7 +93,7 @@ namespace MicroRabbit.Infra.Bus
             var connection = factory.CreateConnection();
 
             var channel = connection.CreateModel();
-            channel.QueueDeclare(eventName);
+            channel.QueueDeclare(eventName, false, false, false, null);
 
             var consumer = new AsyncEventingBasicConsumer(channel);
             consumer.Received += Consumer_Received;
@@ -108,7 +110,7 @@ namespace MicroRabbit.Infra.Bus
             {
                 await ProcessEvent(eventName, message);
             }
-            catch (Exception) { }
+            catch (Exception ex) { var a = ex; }
         }
 
         private async Task ProcessEvent(string eventName, string message)
