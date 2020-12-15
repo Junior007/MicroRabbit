@@ -9,7 +9,7 @@ namespace MicroRabbit.Banking.Data.Repository
 {
     public class AccountRepository : IAccountRepository
     {
-        private BankingDbContext _ctx;
+        private readonly BankingDbContext _ctx;
         public AccountRepository(BankingDbContext ctx)
         {
             _ctx = ctx;
@@ -17,6 +17,11 @@ namespace MicroRabbit.Banking.Data.Repository
         public IEnumerable<Account> GetAccounts()
         {
             return _ctx.Accounts;
+        }
+
+        public int SaveChanges()
+        {
+            return _ctx.SaveChanges();
         }
     }
 }
